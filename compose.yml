@@ -1,0 +1,121 @@
+services:
+  websms-app:
+    image: arolitec/websms:latest
+    container_name: websms
+    env_file:
+      - .env.websms-app
+    ports:
+      - "3001:3000"
+    restart: always
+    volumes:
+      - ./logs:/home/pn/app/logs
+    depends_on:
+      websms-db:
+        condition: service_healthy
+        restart: true
+      websms-typesense:
+        condition: service_healthy
+      websms-redis:
+        condition: service_healthy
+      websms-minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:3001"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  websms-db:
+    image: postgres:16-alpine
+    container_name: websms-db
+    env_file:
+      - .env.websms-db
+    restart: on-failure
+    volumes:
+      - websms-db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-q",
+          "-d",
+          "${POSTGRES_DB}",
+          "-U",
+          "${POSTGRES_USER}",
+        ]
+      retries: 3
+      timeout: 5s
+      interval: 5s
+
+  websms-redis:
+    image: redis/redis-stack:latest
+    container_name: websms-cache
+    restart: on-failure
+    ports:
+      - "6380:6379"
+    volumes:
+      - websms-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  websms-minio:
+    image: minio/minio:latest
+    container_name: websms-minio
+    restart: on-failure
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    env_file:
+      - .env.websms-minio
+    volumes:
+      - websms-minio:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-I",
+          "--silent",
+          "--fail",
+          "http://localhost:9000/minio/health/live",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  websms-typesense:
+    container_name: websms-typesense
+    image: typesense/typesense:26.0
+    restart: on-failure
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "apt install curl -y &>/dev/null || curl --silent --fail localhost:8108/health || exit 1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    ports:
+      - "8108:8108"
+    volumes:
+      - websms-typesense:/data
+    command: "--data-dir /data --api-key=f85bea380ae6487a13367eb873c39c88f16d6f638125ac8a98e18d073b4cf3cc --enable-cors"
+
+volumes:
+  websms-db:
+  websms-redis:
+  websms-typesense:
+  websms-minio:
+
+networks:
+  default:
+    name: websms
+    driver: bridge

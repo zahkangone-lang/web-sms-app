@@ -1,0 +1,7 @@
+.env
+logs
+compose.deploy.yml
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
