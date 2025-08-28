@@ -16,7 +16,7 @@ jobs:
           password: ${{ secrets.REMOTE_HUB_PASSWD }}
       - name: Navigate to project folder
         run: |
-          cd /home/tresor/runner-websm/_work/
+          cd /home/trex18/runner-websm/_work/
       - name: Pull latest images from compose
         run: |
           docker compose pull
