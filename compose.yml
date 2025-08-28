@@ -37,15 +37,16 @@ services:
       - "5432:5432"
     healthcheck:
       test:
-        [
-          "CMD",
-          "pg_isready",
-          "-q",
-          "-d",
-          "${POSTGRES_DB}",
-          "-U",
-          "${POSTGRES_USER}",
-        ]
+        #[
+        #  "CMD",
+        #  "pg_isready",
+        #  "-q",
+        #  "-d",
+        #  "${POSTGRES_DB}",
+        #  "-U",
+        #  "${POSTGRES_USER}",
+        #]
+      test: ["CMD", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       retries: 3
       timeout: 5s
       interval: 5s
