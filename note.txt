@@ -1,0 +1,79 @@
+dans .env.websms-minio : 
+    # j'ai ajouter des valeurs aux deux variables
+
+dans compose.yml
+    # j'ai d'abord modifier les fichier compose.example.yml en compose.yml
+    # j'ai changer le port de la machine hote dans le service websms-redis
+
+j'ai creer un nouveau fichier : .env
+    # dans ce fichier:
+        # 
+
+dans .env.websms-db: 
+    # j'ai set les différentes variables.
+
+    # modifier la valeur de POSTGRES_DB en postgresql pour voir ce que ca donne
+        cela n'a rien donner
+
+    # j'ai ajouter une nouvelle variable:POSTGRES_HOST
+
+dans .env.websms-app j'ai ajouter la ligne suivante :
+
+    DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}"
+    et commenter celle qu'elle remplace.
+
+    j'ai generer les valeurs des variable comme demander
+
+    j'ai defini la variable SUPERADMIN_PASSWORD
+
+    j'ai defini la variable REDIS_HOST et ajouter la variable REDIS_URL=redis://websms-redis:6379
+
+
+    j'ai defini a dummy les variables : HIGHLIGHT_PROJECT_ID, MAILGUN_APIKEY, MAILGUN_DOMAIN, LETEXTO_API_KEY, LETEXTO_API_URL (en URL)
+
+    j'ai definis la variable BASE_URL
+
+    j'ai defini la variable TYPESENSE_HOST
+
+    j'ai ajouter la variable : TYPESENSE_URL
+
+    j'ai defini la variable MINIO_HOST
+
+    j'ai defnis les variables MINIO_ACCESS_KEY et MINIO_SECRET_KEY comme recommander
+
+    j'ai ajouter la variable : MINIO_URL
+
+
+Ajout d'un fichier : .env
+
+
+
+
+
+                                                                                        name: Deployment websms
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.REMOTE_HUB_NAME }}
+          password: ${{ secrets.REMOTE_HUB_PASSWD }}
+      - name: Navigate to project folder
+        run: |
+          cd /home/trex18/runner-websms/_work/
+      - name: Pull latest images from compose
+        run: |
+          docker compose pull
+      - name: Recreate and start containers
+        run: |
+          docker compose down
+          docker compose up -d
+          #docker compose up -d --remove-orphans
