@@ -1,3 +1,4 @@
+# j'ai modifier les fichier compose.example.yml en compose.yml
 services:
   websms-app:
     image: arolitec/websms:latest
@@ -5,7 +6,7 @@ services:
     env_file:
       - .env.websms-app
     ports:
-      - "3001:3000"
+      - "3000:3000"
     restart: always
     volumes:
       - ./logs:/home/pn/app/logs
@@ -20,7 +21,7 @@ services:
       websms-minio:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:3001"]
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:3000"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -36,17 +37,16 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      #test:
-        #[
-        #  "CMD",
-        #  "pg_isready",
-        #  "-q",
-        #  "-d",
-        #  "${POSTGRES_DB}",
-        #  "-U",
-        #  "${POSTGRES_USER}",
-        #]
-      test: ["CMD", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-q",
+          "-d",
+          "${POSTGRES_DB}",
+          "-U",
+          "${POSTGRES_USER}",
+        ]
       retries: 3
       timeout: 5s
       interval: 5s
@@ -56,7 +56,7 @@ services:
     container_name: websms-cache
     restart: on-failure
     ports:
-      - "6380:6379"
+      - "6380:6379" # j'ai changer le port de la machine hote
     volumes:
       - websms-redis:/data
     healthcheck:
