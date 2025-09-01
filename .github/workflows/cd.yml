@@ -22,11 +22,13 @@ jobs:
           password: ${{ secrets.REMOTE_HUB_PASSWD }}
 
       - name: Pull latest images from compose
-        working-directory: /home/trex18/actions-runner/_workdir
-        run: docker compose pull
+        #working-directory: /home/trex18/actions-runner/_workdir
+        run: |
+          cd /home/trex18/actions-runner/_workdir
+          docker compose pull
 
       - name: Recreate and start containers
-        working-directory: /home/trex18/actions-runner/_workdir/web-sms-app/web-sms-app
+        working-directory: /home/trex18/actions-runner/_workdir
         run: |
           docker compose down
           docker compose up -d
