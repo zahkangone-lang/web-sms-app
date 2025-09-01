@@ -29,7 +29,7 @@ jobs:
           docker compose -f /home/trex18/actions-runner/_workdir/web-sms-app/web-sms-app/compose.yml pull
           
       - name: Recreate and start containers
-        working-directory: /home/trex18/actions-runner/_workdir
+        working-directory: /home/trex18/actions-runner/_workdir/web-sms-app/web-sms-app
         run: |
           docker compose down
           docker compose up -d
