@@ -12,8 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          path: /home/trex18/actions-runner/_workdir
+        #with:
+          #path: /home/trex18/actions-runner/_workdir
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
