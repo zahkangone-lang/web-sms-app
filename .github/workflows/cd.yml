@@ -33,4 +33,9 @@ jobs:
         run: |
           docker compose down
           docker compose up -d
+
+          sudo mkdir -p logs
+          sudo chown -R 1000:1000 logs   # 1000 correspond souvent à l’UID de node
+          sudo chmod -R 755 logs
+          
           # docker compose up -d --remove-orphans
