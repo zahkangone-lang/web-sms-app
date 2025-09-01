@@ -1,29 +1,33 @@
 name: Deployment websms
+
 on:
   push:
     branches:
       - main
+
 jobs:
   deploy:
     runs-on: self-hosted
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          path: /home/trex18/actions-runner/_workdir
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.REMOTE_HUB_NAME }}
           password: ${{ secrets.REMOTE_HUB_PASSWD }}
-      - name: Navigate to project folder
-        run: |
-          cd /home/trex18/actions-runner/_workdir
+
       - name: Pull latest images from compose
-        run: |
-          cd /home/trex18/actions-runner/_workdir
-          docker compose pull
+        working-directory: /home/trex18/actions-runner/_workdir
+        run: docker compose pull
+
       - name: Recreate and start containers
+        working-directory: /home/trex18/actions-runner/_workdir
         run: |
-          cd /home/trex18/actions-runner/_workdir
           docker compose down
           docker compose up -d
-          #docker compose up -d --remove-orphans
+          # docker compose up -d --remove-orphans
