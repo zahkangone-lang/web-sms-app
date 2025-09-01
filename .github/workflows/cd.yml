@@ -1,41 +1,28 @@
 name: Deployment websms
-
 on:
   push:
     branches:
       - main
-
 jobs:
   deploy:
     runs-on: self-hosted
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        #with:
-          #path: /home/trex18/actions-runner/_workdir
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.REMOTE_HUB_NAME }}
           password: ${{ secrets.REMOTE_HUB_PASSWD }}
-
       - name: Pull latest images from compose
-        #working-directory: /home/trex18/actions-runner/_workdir
         run: |
           cd /home/trex18/actions-runner/_workdir
-          #docker compose pull
           docker compose -f /home/trex18/actions-runner/_workdir/web-sms-app/web-sms-app/compose.yml pull
-          
       - name: Recreate and start containers
         working-directory: /home/trex18/actions-runner/_workdir/web-sms-app/web-sms-app
         run: |
           docker compose down
           docker compose up -d
-
           sudo mkdir -p logs
-          sudo chown -R 1000:1000 logs   # 1000 correspond souvent à l’UID de node
-          sudo chmod -R 755 logs
-          
-          # docker compose up -d --remove-orphans
+          sudo chown -R 1000:1000 logs  
+          sudo chmod -R 755 logs          
