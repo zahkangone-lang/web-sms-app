@@ -19,9 +19,11 @@ jobs:
           cd /home/trex18/actions-runner/_workdir
       - name: Pull latest images from compose
         run: |
+          cd /home/trex18/actions-runner/_workdir
           docker compose pull
       - name: Recreate and start containers
         run: |
+          cd /home/trex18/actions-runner/_workdir
           docker compose down
           docker compose up -d
           #docker compose up -d --remove-orphans
